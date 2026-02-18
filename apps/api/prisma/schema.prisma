@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanTier {
+  FREE
+  PRO
+  AGENCY
+}
+
+enum ProjectType {
+  WEBSITE
+  APP
+  AUTOMATION
+  SAAS
+}
+
+model User {
+  id             String      @id @default(cuid())
+  email          String      @unique
+  passwordHash   String
+  displayName    String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  memberships    Membership[]
+  sessions       Session[]
+  agentRuns      AgentRun[]
+}
+
+model Workspace {
+  id             String      @id @default(cuid())
+  name           String
+  slug           String      @unique
+  plan           PlanTier    @default(FREE)
+  tokenBudget    Int         @default(200000)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  memberships    Membership[]
+  projects       Project[]
+  chats          ChatThread[]
+  automations    Automation[]
+  usageEvents    UsageEvent[]
+  subscriptions  Subscription[]
+}
+
+model Membership {
+  id             String      @id @default(cuid())
+  role           String
+  userId         String
+  workspaceId    String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+}
+
+model Session {
+  id             String      @id @default(cuid())
+  userId         String
+  refreshToken   String      @unique
+  userAgent      String?
+  ipAddress      String?
+  expiresAt      DateTime
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Project {
+  id             String      @id @default(cuid())
+  workspaceId    String
+  type           ProjectType
+  name           String
+  prompt         String
+  repositoryUrl  String?
+  deployUrl      String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model ChatThread {
+  id             String      @id @default(cuid())
+  workspaceId    String
+  mode           String
+  title          String?
+  createdAt      DateTime    @default(now())
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  messages       ChatMessage[]
+}
+
+model ChatMessage {
+  id             String      @id @default(cuid())
+  threadId       String
+  role           String
+  content        String
+  tokenIn        Int         @default(0)
+  tokenOut       Int         @default(0)
+  createdAt      DateTime    @default(now())
+  thread         ChatThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+}
+
+model AgentRun {
+  id             String      @id @default(cuid())
+  userId         String
+  workspaceId    String
+  agentType      String
+  status         String
+  input          Json
+  output         Json?
+  createdAt      DateTime    @default(now())
+  finishedAt     DateTime?
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Automation {
+  id             String      @id @default(cuid())
+  workspaceId    String
+  name           String
+  definition     Json
+  isActive       Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model UsageEvent {
+  id             String      @id @default(cuid())
+  workspaceId    String
+  metric         String
+  quantity       Float
+  source         String
+  metadata       Json?
+  createdAt      DateTime    @default(now())
+  workspace      Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId, metric, createdAt])
+}
+
+model Subscription {
+  id                     String    @id @default(cuid())
+  workspaceId            String
+  stripeCustomerId       String    @unique
+  stripeSubscriptionId   String?   @unique
+  status                 String
+  currentPeriodEnd       DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  workspace              Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
