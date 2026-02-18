@@ -1,0 +1,210 @@
+# Paradox AI — Production Architecture Blueprint
+
+## 1. Platform Scope
+
+Paradox AI is implemented as a **multi-tenant, event-driven AI product platform** with six product surfaces:
+1. AI Super Chat Engine
+2. Autonomous Website Builder
+3. Full-Stack App Builder
+4. Deep Research Engine
+5. Automation Builder
+6. SaaS-in-10-Minutes Mode
+
+## 2. High-Level System Architecture
+
+## Frontend (Next.js App Router)
+- Marketing site + auth + onboarding
+- Workspace shell with floating command palette
+- AI Chat Studio
+- Website Builder canvas
+- App Builder flow designer
+- Research report workspace
+- Automation workflow editor
+- SaaS launch wizard
+- Billing + usage analytics panel
+- Admin operations console
+
+## Backend (Node.js + TypeScript)
+- API Gateway (REST + GraphQL)
+- Auth Service (JWT + refresh tokens + OAuth)
+- AI Orchestration Service (multi-agent planner/executor)
+- Chat Service (context windows, memory retrieval, tools)
+- Builder Service (template compiler + code generator)
+- Research Service (search + summarization + citations)
+- Automation Service (trigger/action engine + queues)
+- Deploy Service (preview/build/deploy pipeline)
+- Billing Service (Stripe, quotas, invoicing)
+- Analytics Service (events, retention, funnel, model usage)
+
+## Data + Infrastructure
+- PostgreSQL (core transactional + tenancy)
+- Redis (cache, sessions, rate limits, ephemeral agent state)
+- Qdrant/pgvector (long-term memory + semantic retrieval)
+- S3-compatible object storage (uploads, generated assets)
+- NATS/Kafka (event bus)
+- Temporal/BullMQ (durable workflows)
+- ClickHouse (high-volume product analytics)
+
+## 3. AI Super Chat Engine (Implementation)
+
+### Modes
+- `developer`: code generation, debugging, architecture advice
+- `research`: web synthesis + citation-grounded reasoning
+- `business`: GTM, pricing, unit economics, competitive moves
+- `creative`: copy, brand systems, UI concepts
+
+### Core Pipeline
+1. Input is normalized and policy-checked
+2. Context assembler gathers:
+   - conversation window
+   - memory embeddings
+   - workspace files
+   - active product mode
+3. Router chooses LLM + agent plan
+4. Tools execute (web, code runner, DB, deployment APIs)
+5. Response is synthesized with reasoning traces + artifacts
+
+### Memory Architecture
+- Short-term: Redis conversation context
+- Long-term: vector memory with tenant namespaces
+- Episodic: milestones (projects, decisions, outputs)
+- Retrieval strategy: hybrid lexical + semantic + recency weighting
+
+### Multi-Agent Set
+- **Builder Agent**: scaffolds websites/apps/SaaS code
+- **Research Agent**: gathers market/competitor intelligence
+- **Debugger Agent**: traces runtime/build issues and patches code
+- **Growth Strategist Agent**: pricing, distribution, conversion optimization
+
+Agents communicate via an orchestration graph with shared scratchpad and conflict-resolution voting.
+
+## 4. Autonomous Website Builder
+
+### Generation Flow
+1. Prompt intake → style + intent parser
+2. Template selection (landing, portfolio, SaaS, commerce)
+3. Section planner (hero/features/testimonials/CTA/footer)
+4. Component composer with design token injection
+5. SEO layer: metadata, OG tags, schema.org, sitemap
+6. Animation layer:
+   - glassmorphism cards
+   - smooth-scroll sections
+   - gradient borders
+   - micro-interaction states
+7. Export pipeline: clean React/Next code + assets
+
+### Built-in UX requirements
+- Dark neon theme defaults (black + electric blue/purple)
+- Floating nav with blur backdrop
+- Animated particles background
+- AI typing header effects
+- Accessibility checks (contrast, keyboard, ARIA)
+
+## 5. Full-Stack App Builder
+
+### Outputs
+- Frontend: React/Next.js
+- Backend: Node/Fastify/Nest compatible modules
+- Data layer: Prisma migrations for PostgreSQL
+- Auth: email/password, OAuth, magic links, RBAC
+- Admin dashboard: user, content, billing, usage controls
+
+### One-click deployment path
+- Generate Dockerfile + CI workflow
+- Provision managed Postgres + Redis
+- Push to Vercel/Render/Fly/K8s target
+- Run migrations + seed
+- Configure domain + HTTPS
+
+## 6. Deep Research Engine
+
+### Capabilities
+- Real-time web retrieval (SERP + source extraction)
+- Competitor matrix generation
+- Demand scoring model (search trend + social velocity + CPC proxy)
+- TAM/SAM/SOM estimate templates
+- Revenue projections (conservative/base/aggressive)
+
+### Report format
+- Executive summary
+- Evidence table with citations
+- Opportunity scorecard
+- Risk register
+- 90-day validation roadmap
+
+## 7. Automation Builder
+
+### Workflow model
+- Trigger nodes: webhook, schedule, CRM updates, form submit, Stripe events
+- Action nodes: send email, update CRM, notify Slack, invoke AI agent, call API
+- Logic nodes: branch, retry, debounce, rate-limiter, approval gate
+
+### Specialized builders
+- WhatsApp bot flow builder
+- Lead gen funnel automation
+- Email nurture sequence generator
+
+## 8. SaaS-in-10-Minutes Mode
+
+Input: idea + target audience + monetization model
+
+Autogenerated artifacts:
+- Landing page
+- Authenticated dashboard
+- Core backend service
+- Pricing page + Stripe checkout
+- Admin panel
+- Deployment YAML + CI pipeline
+
+## 9. Security and Production Controls
+
+- Argon2 password hashing
+- JWT rotation + device-bound refresh tokens
+- Per-tenant row-level isolation
+- API rate limiting (IP + user + token budgets)
+- Signed upload URLs
+- Audit logs for admin actions
+- SOC2-aligned logging and secret handling
+- WAF + bot protection in front of gateway
+
+## 10. Performance Strategy
+
+- Streaming AI responses (SSE/WebSocket)
+- Edge caching for static assets
+- Lazy loading on all builder canvases
+- Worker queue for long jobs
+- Database read replicas and query budgets
+- Feature flags for controlled rollouts
+
+## 11. UI Component Structure
+
+- `AppShell` (floating nav, command palette, quick actions)
+- `AgentConsole` (agent selection, reasoning trace, handoffs)
+- `ChatComposer` + `MessageTimeline`
+- `BuilderCanvas` + `BlockInspector`
+- `ResearchBoard` + `CitationPanel`
+- `AutomationFlowEditor`
+- `UsageMeter`, `PlanBadge`, `UpgradeModal`
+- `AdminAnalyticsGrid`
+
+## 12. Monetization Logic
+
+### Plans
+- **Free**: limited messages, 1 project, watermark exports
+- **Pro**: expanded model access, 10 projects, custom domains
+- **Agency**: team seats, white-label exports, advanced automations
+
+### Metering dimensions
+- AI tokens (in/out)
+- Agent execution minutes
+- Deployed projects count
+- Automation task runs
+- Research report credits
+
+## 13. Competitive Advantage Strategy
+
+1. Unified platform moat (chat + build + research + automation in one UX)
+2. Multi-agent quality lift vs single-agent assistants
+3. Faster time-to-live deployment than traditional no-code tools
+4. AI-native growth layer (pricing, GTM, experimentation recommendations)
+5. Vertical templates for high-demand micro-SaaS categories
